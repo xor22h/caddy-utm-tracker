@@ -13,6 +13,10 @@ import (
 	"go.uber.org/zap"
 )
 
+func init() {
+	caddy.RegisterModule(UTMTracker{})
+}
+
 // UTMTracker is a Caddy HTTP middleware that captures UTM parameters
 // and marketing attribution data from incoming requests and forwards
 // them as events to OpenPanel.
@@ -82,6 +86,14 @@ func (UTMTracker) CaddyModule() caddy.ModuleInfo {
 // Provision sets up the middleware.
 func (t *UTMTracker) Provision(ctx caddy.Context) error {
 	t.logger = ctx.Logger()
+
+	// Resolve Caddy placeholders (e.g. {env.VAR}) in string config fields
+	repl := caddy.NewReplacer()
+	t.ClientID = repl.ReplaceAll(t.ClientID, "")
+	t.ClientSecret = repl.ReplaceAll(t.ClientSecret, "")
+	t.Endpoint = repl.ReplaceAll(t.Endpoint, "")
+	t.CookieName = repl.ReplaceAll(t.CookieName, "")
+	t.CookieDomain = repl.ReplaceAll(t.CookieDomain, "")
 
 	// Apply defaults
 	if t.Endpoint == "" {

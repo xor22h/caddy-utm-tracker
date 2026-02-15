@@ -104,6 +104,14 @@ func buildEvent(r *http.Request, visitorID, sessionID string, extraParams []stri
 	props := extractParams(r.URL.Query(), extraParams)
 	props["path"] = r.URL.Path
 
+	// Include the full URL with scheme and host
+	scheme := "https"
+	if r.TLS == nil {
+		scheme = "http"
+	}
+	props["__url"] = scheme + "://" + r.Host + r.URL.RequestURI()
+	props["__domain"] = r.Host
+
 	if ref := r.Header.Get("Referer"); ref != "" {
 		props["referrer"] = ref
 	}
