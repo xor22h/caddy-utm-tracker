@@ -1,0 +1,15 @@
+{
+	order utm_tracker before reverse_proxy
+}
+
+:80 {
+	utm_tracker {
+		client_id     "{env.OPENPANEL_CLIENT_ID}"
+		client_secret "{env.OPENPANEL_CLIENT_SECRET}"
+		endpoint      "https://api.openpanel.dev"
+		strip_params  true
+		ignore_paths  /api/* /static/* /_next/* /healthz /favicon.ico
+	}
+
+	reverse_proxy app:80
+}

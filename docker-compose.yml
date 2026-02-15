@@ -1,0 +1,22 @@
+services:
+  caddy:
+    build: .
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./example/Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    environment:
+      - OPENPANEL_CLIENT_ID=${OPENPANEL_CLIENT_ID}
+      - OPENPANEL_CLIENT_SECRET=${OPENPANEL_CLIENT_SECRET}
+
+  app:
+    image: nginx:alpine
+    expose:
+      - "80"
+
+volumes:
+  caddy_data:
+  caddy_config:
